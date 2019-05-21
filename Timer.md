@@ -186,7 +186,7 @@ func (t Time) String() string
 
 
 
-###### 定时器（timer）
+###定时器（timer）
 
 我们经常使用的是time包暴露出来的方法，但是在time包中仅包含一些对timer操作的封装，在`runtime/time.go`包含绝大部分的底层实现；
 
