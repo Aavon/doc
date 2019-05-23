@@ -386,12 +386,12 @@ var timers [timersLen]struct {
 
 ![timers](http://ww1.sinaimg.cn/large/006tNc79gy1g38prmea4pj30i00hywf8.jpg)
 
-在每个timersBucket中，timer满足四叉堆数据结构，按`广度优先`的顺序存储在数组中；以及有如下特性：
+在每个timersBucket中，timer满足"四叉小顶堆"数据结构，元素按`广度优先`的顺序存储在数组中；以及有如下特性：
 
 ```
 1.父节点index = （当前节点index - 1）/ 4
 2.每次调整之后，index为0的节点对应的timer为优先级最高的（when最小）；
-3.层数越大的timer，when越大（index越大的timer，when越大）,方便查找when值最小的timer；
+3.小顶堆的特性：层数越大的timer，when越大（index越大的timer，when一般越大）,方便查找when值最小的timer；
 ```
 
 **调整算法（siftupTimer & siftdownTimer）**
@@ -614,11 +614,8 @@ type timersBucket struct {
 ### 总结
 
 1. 所有timer由golang底层统一管理；
-
-2. 底层数据结构为4叉堆（时间堆），方便查找最早需要触发的timer；
-
+2. 底层数据结构为4叉小顶堆（时间堆），利用了"最小堆"的某些特性，以牺牲精度为代价，降低了维护的时间复杂度（O(log4N）；
 3. 时间堆的数量固定为64，每一个时间堆对应一个goroutine（timer goroutine）;
-
 4. 并发性能优化：timer goroutine只在必要时执行，混存优化等；
 
 参考：
@@ -627,11 +624,10 @@ https://github.com/cch123/golang-notes/blob/master/timer.md
 
 
 
-TODO：
+Future：
 
-1. for循环更新变量，变量更新无法读
-
-2. 时间轮算法（定时器）
+2. (多级)时间轮算法（linux内核,https://blog.csdn.net/zhanglh046/article/details/72833172）
+2. 红黑树（nginx, https://www.cnblogs.com/doop-ymc/p/3440316.html）
 
 
 
