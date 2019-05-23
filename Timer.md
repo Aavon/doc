@@ -631,5 +631,137 @@ Future：
 
 
 
+> tip
 
+```go
+// to update i without sleeping
+func FailureCase3() {
+	i := 0
+	go func() {
+		for {
+			i = i + 1
+			// time.Sleep(time.Second)
+		}
+	}()
+	for {
+		exit := false
+		select {
+		case <-time.Tick(time.Millisecond * 200):
+			if i > 5 {
+				exit = true
+			}
+			println(i)
+		}
+		if exit {
+			break
+		}
+	}
+}
+```
+
+
+
+```
+Java volatile
+1.LOCK#,独享内存，LOCK# 实现方式不同，其他请求全部会阻塞
+2.64字节 -- timerBucket字节填充
+```
+
+在回到golang的atomic:
+
+```asm
+TEXT runtime∕internal∕atomic·Xadd64(SB), NOSPLIT, $0-20
+	// no XADDQ so use CMPXCHG8B loop
+	MOVL	ptr+0(FP), BP
+	TESTL	$7, BP
+	JZ	2(PC)
+	MOVL	0, AX // crash when unaligned
+	// DI:SI = delta
+	MOVL	delta_lo+4(FP), SI
+	MOVL	delta_hi+8(FP), DI
+	// DX:AX = *addr
+	MOVL	0(BP), AX
+	MOVL	4(BP), DX
+addloop:
+	// CX:BX = DX:AX (*addr) + DI:SI (delta)
+	MOVL	AX, BX
+	MOVL	DX, CX
+	ADDL	SI, BX
+	ADCL	DI, CX
+
+	// if *addr == DX:AX {
+	//	*addr = CX:BX
+	// } else {
+	//	DX:AX = *addr
+	// }
+	// all in one instruction
+	// LOCK 独享内存
+	LOCK
+	CMPXCHG8B	0(BP)
+
+	JNZ	addloop
+
+	// success
+	// return CX:BX
+	MOVL	BX, ret_lo+12(FP)
+	MOVL	CX, ret_hi+16(FP)
+	RET
+```
+
+
+
+```go
+// atomic
+func FailureCase5() {
+	var i int64 = 0
+	go func() {
+		for {
+			atomic.AddInt64(&i, 1)
+		}
+	}()
+	for {
+		if i > 5 {
+			println(i)
+			break
+		}
+	}
+}
+
+##output:
+任何一个>5的整数
+```
+
+```go
+// channel
+func FailureCase4() {
+	// or not blook
+	i := make(chan int, 5)
+	go func() {
+		tmp := 0
+		for {
+			i <- tmp
+			tmp++
+		}
+	}()
+	for {
+		exit := false
+		select {
+		case <-time.Tick(time.Millisecond * 200):
+			if t := <-i; t > 5 {
+				println(t)
+				exit = true
+			}
+		}
+		if exit {
+			break
+		}
+	}
+}
+```
+
+
+
+*Do not communicate by sharing memory; instead, share memory by communicating.*
+
+http://blog.golang.org/share-memory-by-communicating
 
