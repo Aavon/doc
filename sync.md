@@ -67,9 +67,9 @@ Unlock操作直接交给等待队列的第一个goroutine；
 
 > 省略了部分并发检查的逻辑
 
-![](/Users/codoon/Documents/工作文档/个人文档/doc/sync/006tNc79gy1g53tk5345fj315a0dcq4l.png)
+![](http://ww4.sinaimg.cn/large/006tNc79gy1g53tk5345fj315a0dcq4l.jpg)
 
-![](/Users/codoon/Documents/工作文档/个人文档/doc/sync/006tNc79gy1g53u5gw9f0j30wk07wdgc.png)
+![](http://ww1.sinaimg.cn/large/006tNc79gy1g53u5gw9f0j30wk07wdgc.jpg)
 
 > 这里不仅仅是对Lock状态的操作需要CAS，Mutex的所有状态更新都要保证CAS，如果CAS失败则要考虑Mutex状态已经被其他goroutine更新，代码中通过`old = m.state`来获取最新的状态
 
