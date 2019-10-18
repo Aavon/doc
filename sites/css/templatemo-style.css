@@ -538,3 +538,12 @@ h5 {
 .copyright-text a {
     color: #bfbfbf;
 }
+
+.container .list-group {
+    background: #fff;
+    color: #000;
+}
+
+.container .list-group .list-head {
+	background: #d6d6d6;
+}
