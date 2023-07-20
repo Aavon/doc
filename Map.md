@@ -2,7 +2,7 @@
 
 ### 1.数据结构&内存分布
 
-![structure](http://ww2.sinaimg.cn/large/006tNc79gy1g50r112ui9j31000n6q4n.jpg)
+![structure](https://github.com/Aavon/doc/blob/master/Map/structure.png?raw=true)
 
 ```go
 // A header for a Go map.

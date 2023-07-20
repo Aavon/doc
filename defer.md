@@ -42,7 +42,7 @@ func TestReturn(t *testing.T) {
 
 **2.参数预计算**
 
-```
+```go
 // 0
 func DeferArg1() {
 	var i int
